@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
 @RunWith(Parameterized.class)
@@ -46,27 +47,31 @@ public class CatTest {
     }
 
     @Test
-    public void testGetFood() throws Exception {
-        if (expectedException == null) {
-            // Настроим мок, чтобы он возвращал переданный список
-            when(mockFeline.eatMeat()).thenReturn(expectedFood);
+    public void testGetFoodReturnsExpectedList() throws Exception {
+        // Настроим мок, чтобы он возвращал переданный список
+        when(mockFeline.eatMeat()).thenReturn(expectedFood);
 
-            // Проверяем, что метод getFood() возвращает правильный результат
-            List<String> actualFood = cat.getFood();
-            assertEquals(expectedFood, actualFood);
+        // Проверяем, что метод getFood() возвращает правильный результат
+        List<String> actualFood = cat.getFood();
+        assertEquals(expectedFood, actualFood);
 
-            // Проверяем, что метод eatMeat() был вызван
-            verify(mockFeline, times(1)).eatMeat();
-        } else {
-            // Настроим мок, чтобы он выбрасывал исключение
-            when(mockFeline.eatMeat()).thenThrow(expectedException);
+        // Проверяем, что метод eatMeat() был вызван
+        verify(mockFeline, times(1)).eatMeat();
+    }
 
-            // Проверяем, что при вызове getFood() будет выброшено исключение
-            try {
-                cat.getFood();
-            } catch (Exception e) {
-                assertEquals(expectedException.getMessage(), e.getMessage());
-            }
+    @Test
+    public void testGetFoodThrowsException() throws Exception {
+        // Создаем ожидаемое исключение
+        Exception expectedException = new Exception("Some error");
+
+        // Настроим мок на выброс этого исключения
+        when(mockFeline.eatMeat()).thenThrow(expectedException);
+
+        try {
+            cat.getFood();
+            fail("Expected exception was not thrown");
+        } catch (Exception e) {
+            assertEquals(expectedException.getMessage(), e.getMessage());
         }
     }
 

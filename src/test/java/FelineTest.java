@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.*;
 
 @RunWith(Parameterized.class)
@@ -50,21 +51,38 @@ public class FelineTest {
     }
 
     @Test
-    public void testEatMeat() throws Exception {
-        if (expectedFood != null) {
-            Feline mockFeline = Mockito.spy(feline); // Шпион для Feline
+    public void testEatMeatPositive() throws Exception {
+        // Arrange
+        List<String> expectedFood = Arrays.asList("Животные", "Птицы", "Рыба");
+        Feline feline = new Feline();
+        Feline mockFeline = Mockito.spy(feline);
 
-            // Настроим шпион, чтобы метод getFood возвращал нужный список
-            doReturn(expectedFood).when(mockFeline).getFood("Хищник");
+        doReturn(expectedFood).when(mockFeline).getFood("Хищник");
 
-            // Вызываем метод eatMeat и проверяем, что он возвращает правильный список
-            List<String> actualFood = mockFeline.eatMeat();
-            assertEquals(expectedFood, actualFood);
+        // Act
+        List<String> actualFood = mockFeline.eatMeat();
 
-            // Проверяем, что метод getFood был вызван с нужным аргументом
-            verify(mockFeline, times(1)).getFood("Хищник");
-        }
+        // Assert
+        assertEquals(expectedFood, actualFood);
+        verify(mockFeline, times(1)).getFood("Хищник");
     }
+
+    @Test
+    public void testEatMeatNegative() throws Exception {
+        // Arrange
+        Feline feline = new Feline();
+        Feline mockFeline = Mockito.spy(feline);
+
+        doReturn(null).when(mockFeline).getFood("Хищник");
+
+        // Act
+        List<String> actualFood = mockFeline.eatMeat();
+
+        // Assert
+        assertNull(actualFood);
+        verify(mockFeline, times(1)).getFood("Хищник");
+    }
+
 
     @Test
     public void testGetFamily() {
